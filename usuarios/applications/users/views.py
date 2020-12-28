@@ -1,10 +1,17 @@
 from django.shortcuts import render
+from django.urls import reverse_lazy,reverse
+from django.http import HttpResponseRedirect
+
+from django.contrib.auth import authenticate,login,logout
 
 from django.views.generic.edit import(
     FormView
 )
+from django.views.generic import View
+
+from .forms import UserRegisterForm,LoginForm
+
 from .models import User
-from .forms import UserRegisterForm
 
 class UserRegisterView(FormView):
     template_name = 'users/register.html'
@@ -21,5 +28,27 @@ class UserRegisterView(FormView):
             genero = form.cleaned_data['genero']
         )
 
-
         return super(UserRegisterView,self).form_valid(form)
+
+class LoginUser(FormView):
+    template_name = 'users/login.html'
+    form_class = LoginForm
+    success_url = reverse_lazy('home_app:Homepage')
+
+    def form_valid(self,form):
+        user = authenticate(
+            username = form.cleaned_data['username'],
+            password = form.cleaned_data['password']
+        )
+        login(self.request,user)
+        return super(LoginUser,self).form_valid(form)
+
+class LogoutView(View):
+    def get(self,request,*args, **kwargs):
+        logout(request)
+        return HttpResponseRedirect(
+            reverse(
+                 'users_app:login'
+            )
+        )
+           
