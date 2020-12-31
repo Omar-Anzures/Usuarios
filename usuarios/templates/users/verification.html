@@ -1,11 +1,9 @@
 
 
 <form method="POST">{% csrf_token %}
+    
    <h2>Verificacion: </h2> 
     {{form.as_p}}
-
-
     <button type="submit">Verificar</button>
-
 
 </form>
